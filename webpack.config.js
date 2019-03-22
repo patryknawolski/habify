@@ -1,10 +1,10 @@
 const path = require('path')
-const CleanWebpackPlugin = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 const development = process.env.NODE_ENV === 'development'
 
 const config = {
+  mode: development ? 'development' : 'production',
   entry: './src/index.js',
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -14,10 +14,7 @@ const config = {
     rules: [
       {
         test: /\.css$/,
-        use: [
-          'style-loader',
-          'css-loader'
-        ]
+        use: []
       }
     ]
   },
@@ -32,13 +29,40 @@ const config = {
 }
 
 if (development) {
-  config.mode = 'development'
-  config.devtool = 'inline-source-map'
-  config.devServer = {
-    contentBase: './dist'
-  }
+  Object.assign(config, {
+    devtool: 'inline-source-map',
+    devServer: {
+      contentBase: './dist'
+    }
+  })
+  config.module.rules[0].use = ['style-loader', 'css-loader?sourceMap']
 } else {
-  config.plugins.push(new CleanWebpackPlugin())
+  const CleanWebpackPlugin = require('clean-webpack-plugin')
+  const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+  const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+  const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+  Object.assign(config, {
+    optimization: {
+      minimizer: [
+        new UglifyJsPlugin({
+          parallel: true
+        }),
+        new OptimizeCSSAssetsPlugin()
+      ]
+    }
+  })
+  config.plugins.push(new CleanWebpackPlugin(), new MiniCssExtractPlugin())
+  config.module.rules[0].use = [MiniCssExtractPlugin.loader, 'css-loader']
+  config.module.rules.push({
+    test: /\.m?js$/,
+    exclude: /(node_modules|bower_components)/,
+    use: {
+      loader: 'babel-loader',
+      options: {
+        presets: ['@babel/preset-env']
+      }
+    }
+  })
 }
 
 module.exports = config
