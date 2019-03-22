@@ -15,8 +15,5 @@
   "scripts": {
     "build": "webpack",
     "lint": "npx eslint ."
-  },
-  "dependencies": {
-    "lodash": "^4.17.11"
   }
 }
