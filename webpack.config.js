@@ -1,7 +1,10 @@
 const path = require('path')
+const CleanWebpackPlugin = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
-module.exports = {
+const development = process.env.NODE_ENV === 'development'
+
+const config = {
   entry: './src/index.js',
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -27,3 +30,15 @@ module.exports = {
     modules: [path.resolve(__dirname, 'src'), 'node_modules']
   }
 }
+
+if (development) {
+  config.mode = 'development'
+  config.devtool = 'inline-source-map'
+  config.devServer = {
+    contentBase: './dist'
+  }
+} else {
+  config.plugins.push(new CleanWebpackPlugin())
+}
+
+module.exports = config
