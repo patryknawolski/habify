@@ -1,4 +1,5 @@
 const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
   entry: './src/index.js',
@@ -17,6 +18,11 @@ module.exports = {
       }
     ]
   },
+  plugins: [
+    new HtmlWebpackPlugin({
+      title: 'Habify - the app for controlling your habits'
+    })
+  ],
   resolve: {
     modules: [path.resolve(__dirname, 'src'), 'node_modules']
   }
