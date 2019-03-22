@@ -1,3 +1,5 @@
+import 'normalize.css'
+
 function component () {
   let element = document.createElement('h1')
 
